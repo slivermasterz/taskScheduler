@@ -1,187 +1,198 @@
 import javax.swing.*;
 import java.awt.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.awt.event.ActionEvent;
 
-import javafx.scene.control.DatePicker;
-
-//CreateEditTaskDialog cd = new ....
-
-public class CreateEditProjectDialog extends JDialog {
-	private JLabel nameLabel = new JLabel("Name:");
-	private JLabel descriptionLabel = new JLabel("Description:");
-	private JLabel statusLabel = new JLabel("Status:");
-	private JLabel dueDateLabel = new JLabel("Due:");
-	private JTextField nameInput = new JTextField(50);
-	private JTextArea descriptionInput = new JTextArea();
-	private JComboBox<String> statusChoice = new JComboBox<String>();
-	private JButton submitBtn = new JButton("FSFFDSAF");
-	private JButton cancelBtn = new JButton("Cancel");
-	private JTextField datePicker = new JTextField("MM/DD/YYYY");
-	private MainScreen parentPanel;
-	private ProjectModel project;
-	private JColorChooser jcc;
-	private TaskModel model;
-	
-	//add a colorpicker
-	//confirm(edit/create), calls addnewTask/editnewTask and cancel btns
-	//cancel calls this.dispose
-	
-	/*
-	 * Constructor for CreateEditTaskDialog
-	 * Given a model, if the model is null set buttons to "Create" and if model exists, set buttons to "Edit"
-	 * Right now, we only take in one task. Not sure how to update entire model based off this dialog, do not have access to entire model.
-	 * Possible solution: Pass the entire model through this constructor? Or set the entire model as one of the parameters for the constructor
-	 * "(MainScreen mainscreen, EntireModel model, TaskModel task)"
-	 */
-	public CreateEditProjectDialog(MainScreen mainscreen, TaskModel model) {
-		super(SwingUtilities.getWindowAncestor(mainscreen));
-		this.model = model;
-		project = mainscreen.getCurrProj();
-		JPanel entirePanel = new JPanel();
-		entirePanel.setLayout(new BoxLayout(entirePanel, BoxLayout.Y_AXIS));
-		JPanel textFields = new JPanel();
-		textFields.setLayout(new GridLayout(0, 2));
-
-		//Add all textfields to JPanel
-		textFields.add(nameLabel);
-		textFields.add(nameInput);
-		textFields.add(descriptionLabel);
-		textFields.add(descriptionInput);
-		textFields.add(statusLabel);
-		textFields.add(statusChoice);
-		textFields.add(dueDateLabel);
-		textFields.add(datePicker);
+public class CreateEditProjectDialog extends JDialog{
 
 
-		if(model == null) {
-			submitBtn.setText("Create");
-			//setTitle("Create Task");
-		}
-		else {
-			submitBtn.setText("Edit");
-			//setTitle("Edit Task");
-		}
-		
-		
-		//createGUI();
-		//Action listeners
-		//Add a method to update the model after create/editing
-        submitBtn.addActionListener(e->{
-            giveTask();
+    private JLabel nameLabel = new JLabel("Project Name: ");
+    private JTextField projectName;
+    private JList<String> list;
+    private ProjectModel projectModel = new ProjectModel("",null);
+    private ProjectModel mainModel;
+    private MainScreen parent;
+    private JButton upButton = new JButton("Move Up");
+    private JButton downButton = new JButton("Move Down");
+    private JButton addButton = new JButton("Add Status");
+    private JButton removeButton = new JButton("Remove Status");
+    private JButton confirm = new JButton("Confirm");
+    private JButton cancel = new JButton("Cancel");
+    private JButton editButton = new JButton("Edit Status");
+
+
+    /**
+     * Private Constructor for CreateEditProjectDialog. Construct new Dialog from show method
+     * @param parent MainScreen of TaskBoard
+     * @param model ProjectModel to be edited, null if new Project is to be constructed
+     */
+    private CreateEditProjectDialog(MainScreen parent, ProjectModel model)
+    {
+        super(SwingUtilities.getWindowAncestor(parent));
+        this.parent = parent;
+        projectModel.copyFrom(model);
+        mainModel = model;
+        list = new JList<String>(projectModel);
+        createGUI();
+    }
+
+    public static void show(MainScreen parent, ProjectModel projectModel)
+    {
+        new CreateEditProjectDialog(parent, projectModel);
+    }
+
+    private void createGUI(){
+        this.setTitle((mainModel==null?"Create":"Edit")+" Project");
+        confirm.setText(mainModel==null?"Create":"Edit");
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+        this.setModalityType(ModalityType.APPLICATION_MODAL);
+        this.setModal(true);
+        projectName = new JTextField("Project " + (parent.getTaskBoardModel().numProjects() + 1));
+        projectName.setPreferredSize(new Dimension(125,26));
+
+        JPanel namePanel = new JPanel();
+        namePanel.add(nameLabel);
+        namePanel.add(projectName);
+        panel.add(namePanel);
+
+        JPanel boxPanel = new JPanel();
+        boxPanel.setLayout(new BoxLayout(boxPanel,BoxLayout.Y_AXIS));
+        Dimension size =  new Dimension(120,26);
+        upButton.setMinimumSize(size);
+        downButton.setMinimumSize(size);
+        addButton.setMinimumSize(size);
+        removeButton.setMinimumSize(size);
+        editButton.setMinimumSize(size);
+        upButton.setMaximumSize(size);
+        downButton.setMaximumSize(size);
+        addButton.setMaximumSize(size);
+        removeButton.setMaximumSize(size);
+        editButton.setMaximumSize(size);
+        list.setPreferredSize(new Dimension(90,150));
+
+        boxPanel.add(upButton);
+        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(downButton);
+        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(addButton);
+        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(removeButton);
+        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(editButton);
+
+
+        JPanel statusPanel = new JPanel();
+        statusPanel.add(boxPanel);
+        statusPanel.add(list);
+        panel.add(statusPanel);
+
+        JPanel confirmCancelPanel = new JPanel();
+        confirmCancelPanel.add(confirm);
+        confirmCancelPanel.add(cancel);
+        panel.add(confirmCancelPanel);
+
+
+        upButton.addActionListener((ActionEvent e) -> {
+            moveUp();
+        });
+        downButton.addActionListener((ActionEvent e) -> {
+            moveDown();
+        });
+        addButton.addActionListener((ActionEvent e) -> {
+            addStatus();
+        });
+        removeButton.addActionListener((ActionEvent e) -> {
+            deleteStatus();
+        });
+        editButton.addActionListener((ActionEvent e) -> {
+            changeName();
+        });
+        confirm.addActionListener((ActionEvent e) -> {
+            mainModel = projectModel;
+            mainModel.setName(projectName.getText());
+            parent.getTaskBoardModel().addProjects(mainModel);
+            mainModel.addListener(parent);
+            mainModel.update();
             this.dispose();
         });
-        cancelBtn.addActionListener(e->{
-        	this.dispose();
+        cancel.addActionListener((ActionEvent e)-> {
+            this.dispose();
         });
-        
-		JPanel buttons = new JPanel();
-		buttons.setLayout(new FlowLayout());
-		buttons.add(submitBtn);
-		buttons.add(cancelBtn);
-        
-        entirePanel.add(textFields);
-        entirePanel.add(buttons);
-        this.add(entirePanel);
-        this.pack();
-        this.setVisible(true);
-	}
-	
-	
-	public void giveTask() {		
-		SimpleDateFormat sdf = new SimpleDateFormat("MM/DD/YYYY");
-		Date c = null;
-		try {
-			c = sdf.parse(datePicker.getText());
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if(model == null) {
-			model = new TaskModel(nameInput.getText(), descriptionInput.getText(), c, 
-					String.valueOf(statusChoice.getSelectedItem()), Color.GRAY);
-			//EntireModel, create part has an issue. Need some way to transform that model or return a model to add
-		} else {
-			model.setName(nameInput.getText());
-			model.setDescription(descriptionInput.getText());
-			model.setDueDate(c);
-			model.setStatus(String.valueOf(statusChoice.getSelectedItem()));
-			model.setColor(Color.GRAY);
-		}
-	}
-	
-	public CreateEditProjectDialog(MainScreen mainscreen) {
-		this(mainscreen, null);
-	}
-	
-	/*
-	 * 
-	 */
-//    private void createGUI()
-//    {
-//    	//Create and set up the window
-//    	JFrame frame = new JFrame("Create Task");
-//    	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//    	frame.setPreferredSize(new Dimension(540, 540));
-//    	
-//    	//Action listeners
-//        submitBtn.addActionListener(e->{
-//            //giveTask();
-//        });
-//        cancelBtn.addActionListener(e->{
-//        	this.dispose();
-//        });
-//        
-//        //Set up the pane
-//        this.add(cancelBtn);
-//        this.add(submitBtn);
-//        this.pack();
-//        this.setVisible(true);
-//    }
-//    
-//    private void editGUI()
-//    {
-//    	//Create and set up the window
-//    	JFrame frame = new JFrame("Edit Task");
-//    	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//    	
-//    	//Action listeners
-//        submitBtn.addActionListener(e->{
-//            //giveTask();
-//        });
-//        cancelBtn.addActionListener(e->{
-//        	this.dispose();
-//        });
-//        
-//        //Set up the pane
-//        this.add(cancelBtn);
-//        this.add(submitBtn);
-//        this.pack();
-//        this.setVisible(true);
-//    }
-//    
-    private void addNewTask() {
-    	ProjectModel project = parentPanel.getCurrProj();
-    	TaskModel model = project.createTask(nameInput.getText(), descriptionInput.getText(), new Date(datePicker.getValue().toEpochDay()), (String)statusChoice.getSelectedItem());
-    	project.addTask(model);
+
+        this.add(panel);
+
+
+        pack();
+        setVisible(true);
+        System.out.println(boxPanel.getSize());
     }
 
-    private void editTask(TaskModel oldTask) {
-    	ProjectModel project = parentPanel.getCurrProj();
-    	TaskModel model = project.createTask(nameInput.getText(), descriptionInput.getText(), new Date(datePicker.getValue().toEpochDay()), (String)statusChoice.getSelectedItem());
-    	project.editTask(oldTask, model);
+    private void addStatus()
+    {
+        String name = JOptionPane.showInputDialog(this,"Enter new status name:",null );
+        if (name != null)
+        {
+            System.out.println(projectModel.numStatuses());
+            projectModel.addStatus(name);
+            list.setSelectedIndex(projectModel.numStatuses()-1);
+            list.updateUI();
+        }
     }
-	
-	public static void main(String[] args) {
-		JFrame frame = new JFrame("Test");
-//        MainScreen main = new MainScreen(frame, new TaskBoardModel());
-//        CreateEditTaskDialog cd = new CreateEditTaskDialog(main);
-//        main.setPreferredSize(new Dimension(1080,720));
-//        frame.add(cd);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-	}
+
+    private void changeName()
+    {
+        String name = JOptionPane.showInputDialog(this,"Enter new status name:",null );
+        if (name != null)
+        {
+            projectModel.editStatus(list.getSelectedIndex(),name);
+            list.updateUI();
+        }
+    }
+
+    private void deleteStatus()
+    {
+        int index = list.getSelectedIndex();
+        if (index == -1)
+        {
+            Toolkit.getDefaultToolkit().beep();
+        }
+        else
+        {
+            projectModel.deleteStatus(index);
+            list.setSelectedIndex(-1);
+            list.updateUI();
+        }
+    }
+
+    private void moveUp()
+    {
+        int index = list.getSelectedIndex();
+        if (index <= 0)
+        {
+            Toolkit.getDefaultToolkit().beep();
+            return;
+        }
+        else
+        {
+            projectModel.swap(index,index-1);
+            list.setSelectedIndex(index-1);
+            list.updateUI();
+        }
+    }
+
+    private void moveDown()
+    {
+        int index = list.getSelectedIndex();
+        if (index == -1 || index == projectModel.numStatuses()-1)
+        {
+            Toolkit.getDefaultToolkit().beep();
+            return;
+        }
+        else
+        {
+            projectModel.swap(index,index+1);
+            list.setSelectedIndex(index+1);
+            list.updateUI();
+        }
+    }
 }
