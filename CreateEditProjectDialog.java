@@ -47,7 +47,7 @@ public class CreateEditProjectDialog extends JDialog{
         panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
         this.setModalityType(ModalityType.APPLICATION_MODAL);
         this.setModal(true);
-        projectName = new JTextField("Project " + (parent.getTaskBoardModel().numProjects() + 1));
+        projectName = new JTextField(mainModel==null?("Project " + (parent.getTaskBoardModel().numProjects() + 1)):mainModel.getName());
         projectName.setPreferredSize(new Dimension(125,26));
 
         JPanel namePanel = new JPanel();
