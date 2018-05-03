@@ -1,9 +1,8 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-public class StatusListDialog extends JDialog{
+public class CreateEditProjectDialog extends JDialog{
 
 
     private JLabel nameLabel = new JLabel("Project Name: ");
@@ -22,7 +21,7 @@ public class StatusListDialog extends JDialog{
 
 
 
-    public StatusListDialog(MainScreen parent, ProjectModel model)
+    public CreateEditProjectDialog(MainScreen parent, ProjectModel model)
     {
         super(SwingUtilities.getWindowAncestor(parent));
         this.parent = parent;
@@ -34,7 +33,7 @@ public class StatusListDialog extends JDialog{
 
     public static void show(MainScreen parent, ProjectModel projectModel)
     {
-        new StatusListDialog(parent, projectModel);
+        new CreateEditProjectDialog(parent, projectModel);
     }
 
     private void createGUI(){
