@@ -1,163 +1,245 @@
+import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionListener;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
-public class TaskMap implements Serializable
-{
-    /**
-     * String ArrayList of status names
-     */
-    public ArrayList<String> statuses;
-    /**
-     * ArrayList of ArrayLists of TaskModels
-     * Index of ArrayLists mirror those of statuses
-     */
-    public ArrayList<ArrayList<TaskModel>> taskGroups;
-    private int size;
+/**
+ * ProjectModel is a collection of TaskModels representing a Project
+ * ProjectModel will automatically sort all TaskModels added to it.
+ *
+ * Created by Lok Chu
+ */
+public class ProjectModel implements Serializable, ListModel<String>{
 
     /**
-     * Constructor of TaskMap
-     * Creates map based on String statuses given
-     * @param statuses ArrayList of Strings that are the names of the statuses
+     * Name of Project
      */
-    public TaskMap(ArrayList<String> statuses)
+    private String name;
+    /**
+     * TaskMap data structure holding all TaskModels
+     */
+    private TaskMap map;
+    /**
+     * Listeners of ProjectModel
+     */
+    private ArrayList<TaskModelListener> listeners = new ArrayList<TaskModelListener>();
+
+    /**
+     * Constructor of ProjectModel
+     * @param name Name of Project
+     * @param statuses Statuses to add to ProjectModel
+     */
+    public ProjectModel(String name, ArrayList<String> statuses) {
+        this.name = name;
+        map = new TaskMap(statuses);
+    }
+
+
+    public void copyFrom(ProjectModel projectModel)
     {
-        this.statuses = new ArrayList<String>();
-        taskGroups = new ArrayList<ArrayList<TaskModel>>();
-        size = 0;
-        statuses = statuses==null?new ArrayList<String>():statuses;
-        for (String s : statuses)
+        if (projectModel == null)
         {
-            addStatus(s);
+            projectModel = new ProjectModel("",null);
         }
-    }
-
-    public TaskMap(TaskMap t)
-    {
-        this.statuses = (ArrayList<String>) t.statuses.clone();
-        this.taskGroups = (ArrayList<ArrayList<TaskModel>>) t.taskGroups.clone();
-        this.size = t.size;
-    }
-
-
-    /**
-     * Adds a status to end of TaskMap.
-     * Also creates an ArrayList for TaskModels
-     * @param status status String to add to TaskMap
-     */
-    public void addStatus(String status)
-    {
-        addStatus(statuses.size(),status);
+        this.name = projectModel.name;
+        this.map = new TaskMap(projectModel.map);
+        this.listeners = projectModel.listeners;
+        update();
     }
 
     /**
-     * Adds a status to TaskMap at int Index
-     * Also creates an ArrayList for TaskModels
-     * @param index index of where to add status
-     * @param status status String to add to TaskMap
+     * Adds status to ProjectModel. Also adds respective TaskModel list
+     * @param status String name of status being added
      */
-    public void addStatus(int index, String status)
-    {
-        statuses.add(index,status);
-        taskGroups.add(index,new ArrayList<TaskModel>());
+    public void addStatus(String status) {
+        map.addStatus(status);
+        update();
     }
 
     public void editStatus(int index, String newStatus)
     {
-        statuses.remove(index);
-        statuses.add(index,newStatus);
-        for (TaskModel t : taskGroups.get(index))
-        {
-            t.setStatus(newStatus);
-        }
+        map.editStatus(index,newStatus);
+        update();
     }
 
     /**
-     * Removes status from TaskMap
-     * Also removes respective TaskGroup
-     * @param index of status to remove from TaskMap
+     * Removes status from ProjectModel
+     * Also removes Tasks within status
+     * @param index index of status
      */
-    public void removeStatus(int index)
+    public void deleteStatus(int index)
     {
-        taskGroups.remove(index);
-        statuses.remove(index);
+        map.removeStatus(index);
+        update();
     }
 
     /**
-     * Adds TaskModel to TaskMap
-     * TaskModel is inserted in ascending order
-     * @param taskModel TaskModel to be added into TaskMap
-     * @return true if added, false if not added
+     * Adds TaskModel to ProjectModel
+     * @param taskModel TaskModel to be added
+     * @return true if added successfully. false if not
      */
     public Boolean addTask(TaskModel taskModel) {
-        int groupIndex = statuses.indexOf(taskModel.getStatus());
-        if (groupIndex == -1) {
-            return false;
-        }
-
-        ArrayList<TaskModel> a = taskGroups.get(groupIndex);
-        int index = -1;
-        for (TaskModel other : a) {
-            index = taskModel.compareTo(other) > 0 ? a.indexOf(other) : index;
-        }
-        a.add(index + 1, taskModel);
-        size++;
-        return true;
+        Boolean result = map.addTask(taskModel);
+        update();
+        return result;
     }
 
     /**
-     * Removes TaskModel from TaskMap
-     * @param taskModel TaskModel to be removed
-     * @return true if removed, false if not
+     * Creates a new TaskModel
+     * @return TaskModel with default parameters
      */
-    public Boolean removeTask(TaskModel taskModel)
-    {
-        int groupIndex = statuses.indexOf(taskModel.getStatus());
-        if (groupIndex == -1)
-        {
-            return false;
-        }
-        if (taskGroups.get(groupIndex).remove(taskModel))
-        {
-            size--;
+    public TaskModel createTask() {
+        String taskName = "Task" + map.size() + 1;
+        return new TaskModel(taskName, "", null, topStatus());
+    }
+
+    /**
+     * Creates a TaskModel with given parameters
+     * @param name String name of TaskModel
+     * @param des String description of TaskModel
+     * @param date Date due date of TaskModel
+     * @param status String status of TaskModel
+     * @return TaskModel with given parameters.
+     */
+    public TaskModel createTask(String name, String des, Date date, String status) {
+        return new TaskModel(name, des, date, status);
+    }
+
+
+    /**
+     * Changes oldTask to newTask
+     * @param oldTask TaskModel to be changed
+     * @param newTask modified TaskModel
+     * @return false if oldTask cannot be found
+     */
+    public Boolean editTask(TaskModel oldTask, TaskModel newTask) {
+        if (map.removeTask(oldTask)) {
+            map.addTask(newTask);
+            update();
             return true;
         }
         return false;
     }
 
     /**
-     * Swaps the position of two statuses
-     * @param x index of first status
-     * @param y index of second status
-     * @return true if swapped, false if not
+     * Deletes TaskModel from ProjectModel
+     * @param taskModel TaskModel to be removed
+     * @return true if removed, false if not
      */
-    public Boolean swapStatusIndex(int x, int y)
-    {
-        if (x >= statuses.size() || y >= statuses.size())
-        {
-            return false;
+    public Boolean deleteTask(TaskModel taskModel) {
+        if (map.removeTask(taskModel)) {
+            update();
+            return true;
         }
-        String temp = statuses.get(x);
-        statuses.add(x,statuses.get(y));
-        statuses.remove(x+1);
-        statuses.add(y,temp);
-        statuses.remove(y+1);
-
-        ArrayList<TaskModel> tempArr = taskGroups.get(x);
-        taskGroups.add(x,taskGroups.get(y));
-        taskGroups.remove(x+1);
-        taskGroups.add(y,tempArr);
-        taskGroups.remove(y+1);
-
-        return true;
+        return false;
     }
 
     /**
-     * Number of TaskModels in TaskMap
-     * @return int number TaskModels
+     * Swaps status positions of given indexes.
+     * @param x index of statusA
+     * @param y index of statusB
      */
-    public int size()
+    public void swap(int x, int y)
     {
-        return size;
+        map.swapStatusIndex(x,y);
+        update();
     }
 
+    /**
+     * gets the ArrayList of TaskModels within a status
+     * @param index Index of status to get
+     * @return ArrayList of TaskModels of status index
+     */
+    public ArrayList<TaskModel> getCategory(int index)
+    {
+        return map.taskGroups.get(index);
+    }
+
+    /**
+     * Gets status name at index
+     * @param index index of status
+     * @return String status name
+     */
+    public String getStatus(int index)
+    {
+        return map.statuses.get(index);
+    }
+
+    /**
+     * Gives the name of the first status
+     * @return index 0 of statuses
+     */
+    public String topStatus() {
+        return map.statuses.get(0);
+    }
+
+    /**
+     * Returns number of Statuses in Project
+     * @return numStatus of ProjectModel
+     */
+    public int numStatuses()
+    {
+        return map.statuses.size();
+    }
+
+    public ArrayList<String> getStatuses()
+    {
+        return map.statuses;
+    }
+
+    /**
+     * Updates all TaskModelListeners
+     */
+    public void update() {
+        for (TaskModelListener l : listeners) {
+            l.update();
+        }
+    }
+
+    /**
+     * Add TaskModelListener to listerners
+     * @param l TaskModelListener to be added
+     */
+    public void addListener(TaskModelListener l)
+    {
+        listeners.add(l);
+    }
+
+    /**
+     * Get's name of ProjectModel
+     * @return String name of ProjectModel
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Set name of ProjectModel
+     * @param name new String name of ProjectModel
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public int getSize() {
+        return numStatuses();
+    }
+
+    @Override
+    public String getElementAt(int index) {
+        return map.statuses.get(index);
+    }
+
+    @Override
+    public void addListDataListener(ListDataListener l) {
+
+    }
+
+    @Override
+    public void removeListDataListener(ListDataListener l) {
+
+    }
 }
