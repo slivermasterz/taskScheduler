@@ -65,6 +65,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 			this.currentProj = this.boardMainModel.getProject(0);
 			this.currentProj.addListener(this);
 			this.selectedProjIndex = 0;
+			updateDropDown();
 			loadDataFromCurrProject();
 		}
 		else
@@ -79,7 +80,14 @@ public class MainScreen extends JPanel implements TaskModelListener
 	{
 	
 	}
-
+	/**
+	 * Jobs covered:
+	 * - instantiate all the components that should go in the navBar.
+	 * - sets layout and the background color of the navBar.
+	 * - Adds the navBar to mainScreen.
+	 * - no strings gets added to the jcombobox
+	 * @return
+	 */
 	private JPanel setupNavBar()
 	{
 		
@@ -103,10 +111,14 @@ public class MainScreen extends JPanel implements TaskModelListener
 		this.navBar.add(this.logoutBtn);
 		this.add(this.navBar,BorderLayout.NORTH);
 		this.navBar.setSize(this.navBar.getWidth(), this.navBar.getMinimumSize().height);
-		updateDropDown();
 		return this.navBar;
 	}
-	
+	/**
+	 * Jobs Covered:
+	 * - creates the groups component panels.
+	 * - sets its layout.
+	 * - add the groupscomp to the mainscreen(Center)
+	 */
 	private void setupGroupsComp()
 	{
 		this.groupsComp = new JPanel();
@@ -115,7 +127,12 @@ public class MainScreen extends JPanel implements TaskModelListener
 
 		this.add(this.groupsComp,BorderLayout.CENTER);
 	}
-
+	/**
+	 * Jobs converd:
+	 * - set the size of the mainScreen and its layout.
+	 * - adds the navbar and the groups component.
+	 * - adds the action listeners to the buttons in the navbar.
+	 */
 	private void setupMainScreen()
 	{
 		this.setLayout(new BorderLayout());
@@ -126,7 +143,9 @@ public class MainScreen extends JPanel implements TaskModelListener
 	}
 	
 	
-	
+	/**
+	 * handles the actionListners of the buttons in the navbar.
+	 */
 	private void handleActionListeners()
 	{
 		this.editSelectedProjBtn.addActionListener(
@@ -161,7 +180,9 @@ public class MainScreen extends JPanel implements TaskModelListener
 					}
 				});
 	}
-	
+	/**
+	 * Adds TaskBoardModel list of projects back to jcomobox
+	 */
 	private void updateDropDown()
 	{
 		this.isDropDownListnerActivated = false;
@@ -207,10 +228,18 @@ public class MainScreen extends JPanel implements TaskModelListener
 	private void loadNewProjectDialog()
 	{
 		//TODO: add code to show the create project dialog.
+		// track the number of projects. and decide
 		JDialog dialog = new JDialog((JFrame)SwingUtilities.getRoot(this),"create new project",true);
 		JLabel text = new JLabel("there no more projects in the taskboard model. you have to be forced to create new project.");
 		dialog.add(text);
 		dialog.setVisible(true);
+		
+		//if creating new project got canceled and there is no projects left in the mainboard.
+		if(this.boardMainModel.numProjects() == 0)
+		{
+			this.selectedProjIndex = -1;
+		}
+		
 	}
 	
 	private void loadEditProjectDialog()

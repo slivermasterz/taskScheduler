@@ -20,8 +20,12 @@ public class CreateEditProjectDialog extends JDialog{
     private JButton editButton = new JButton("Edit Status");
 
 
-
-    public CreateEditProjectDialog(MainScreen parent, ProjectModel model)
+    /**
+     * Private Constructor for CreateEditProjectDialog. Construct new Dialog from show method
+     * @param parent MainScreen of TaskBoard
+     * @param model ProjectModel to be edited, null if new Project is to be constructed
+     */
+    private CreateEditProjectDialog(MainScreen parent, ProjectModel model)
     {
         super(SwingUtilities.getWindowAncestor(parent));
         this.parent = parent;
@@ -104,11 +108,11 @@ public class CreateEditProjectDialog extends JDialog{
             changeName();
         });
         confirm.addActionListener((ActionEvent e) -> {
+            projectModel.setName(projectName.getText());
+            projectModel.addListener(parent);
+            parent.getTaskBoardModel().addProjects(projectModel);
             mainModel = projectModel;
-            mainModel.setName(projectName.getText());
-            parent.getTaskBoardModel().addProjects(mainModel);
-            mainModel.addListener(parent);
-            mainModel.update();
+            projectModel.update();
             this.dispose();
         });
         cancel.addActionListener((ActionEvent e)-> {

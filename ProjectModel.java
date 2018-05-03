@@ -39,9 +39,14 @@ public class ProjectModel implements Serializable, ListModel<String>{
 
     public void copyFrom(ProjectModel projectModel)
     {
+        if (projectModel == null)
+        {
+            projectModel = new ProjectModel("",null);
+        }
         this.name = projectModel.name;
         this.map = new TaskMap(projectModel.map);
         this.listeners = projectModel.listeners;
+        update();
     }
 
     /**
