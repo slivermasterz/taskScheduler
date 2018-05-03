@@ -1,60 +1,91 @@
 import javax.swing.*;
-import javax.swing.event.ListDataListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 
-public class StatusListDialog extends JDialog{
+public class CreateEditProjectDialog extends JDialog{
 
+
+    private JLabel nameLabel = new JLabel("Project Name: ");
+    private JTextField projectName;
     private JList<String> list;
     private ProjectModel projectModel = new ProjectModel("",null);
+    private ProjectModel mainModel;
     private MainScreen parent;
     private JButton upButton = new JButton("Move Up");
     private JButton downButton = new JButton("Move Down");
-    private JButton addButton = new JButton("+");
-    private JButton removeButton = new JButton("-");
+    private JButton addButton = new JButton("Add Status");
+    private JButton removeButton = new JButton("Remove Status");
     private JButton confirm = new JButton("Confirm");
     private JButton cancel = new JButton("Cancel");
-    private JButton editButton = new JButton("Edit");
+    private JButton editButton = new JButton("Edit Status");
 
 
-    public StatusListDialog(MainScreen parent)
+
+    public CreateEditProjectDialog(MainScreen parent, ProjectModel model)
     {
         super(SwingUtilities.getWindowAncestor(parent));
         this.parent = parent;
-        projectModel.copyFrom(parent.getCurrProj());
+        projectModel.copyFrom(model);
+        mainModel = model;
         list = new JList<String>(projectModel);
         createGUI();
     }
 
+    public static void show(MainScreen parent, ProjectModel projectModel)
+    {
+        new CreateEditProjectDialog(parent, projectModel);
+    }
+
     private void createGUI(){
-        this.setLayout(new BorderLayout());
-        this.add(list,BorderLayout.WEST);
+        this.setTitle((mainModel==null?"Create":"Edit")+" Project");
+        confirm.setText(mainModel==null?"Create":"Edit");
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
         this.setModalityType(ModalityType.APPLICATION_MODAL);
         this.setModal(true);
-        JPanel p1 = new JPanel();
-        p1.setLayout(new BoxLayout(p1,BoxLayout.Y_AXIS));
-        upButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        downButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        p1.add(upButton);
-        p1.add(Box.createRigidArea(new Dimension(0,5)));
-        p1.add(downButton);
+        projectName = new JTextField("Project " + (parent.getTaskBoardModel().numProjects() + 1));
+        projectName.setPreferredSize(new Dimension(125,26));
 
-        removeButton.setToolTipText("Deletes selected status. Use with care");
-        addButton.setToolTipText("Adds new status");
+        JPanel namePanel = new JPanel();
+        namePanel.add(nameLabel);
+        namePanel.add(projectName);
+        panel.add(namePanel);
 
-        JPanel p2 = new JPanel();
-        p2.add(addButton);
-        p2.add(removeButton);
-        p1.add(p2);
+        JPanel boxPanel = new JPanel();
+        boxPanel.setLayout(new BoxLayout(boxPanel,BoxLayout.Y_AXIS));
+        Dimension size =  new Dimension(120,26);
+        upButton.setMinimumSize(size);
+        downButton.setMinimumSize(size);
+        addButton.setMinimumSize(size);
+        removeButton.setMinimumSize(size);
+        editButton.setMinimumSize(size);
+        upButton.setMaximumSize(size);
+        downButton.setMaximumSize(size);
+        addButton.setMaximumSize(size);
+        removeButton.setMaximumSize(size);
+        editButton.setMaximumSize(size);
+        list.setPreferredSize(new Dimension(90,150));
 
-        editButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        p1.add(editButton);
+        boxPanel.add(upButton);
+        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(downButton);
+        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(addButton);
+        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(removeButton);
+        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(editButton);
 
-        JPanel p3 = new JPanel();
-        p3.add(confirm);
-        p3.add(cancel);
-        this.add(p3,BorderLayout.SOUTH);
+
+        JPanel statusPanel = new JPanel();
+        statusPanel.add(boxPanel);
+        statusPanel.add(list);
+        panel.add(statusPanel);
+
+        JPanel confirmCancelPanel = new JPanel();
+        confirmCancelPanel.add(confirm);
+        confirmCancelPanel.add(cancel);
+        panel.add(confirmCancelPanel);
 
 
         upButton.addActionListener((ActionEvent e) -> {
@@ -73,16 +104,23 @@ public class StatusListDialog extends JDialog{
             changeName();
         });
         confirm.addActionListener((ActionEvent e) -> {
-            parent.getCurrProj().copyFrom(projectModel);
+            mainModel = projectModel;
+            mainModel.setName(projectName.getText());
+            parent.getTaskBoardModel().addProjects(mainModel);
+            mainModel.addListener(parent);
+            mainModel.update();
             this.dispose();
         });
         cancel.addActionListener((ActionEvent e)-> {
             this.dispose();
         });
-        this.add(p1);
+
+        this.add(panel);
+
 
         pack();
         setVisible(true);
+        System.out.println(boxPanel.getSize());
     }
 
     private void addStatus()
