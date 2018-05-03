@@ -62,6 +62,15 @@ public class TaskModel implements Comparable<TaskModel>, Serializable{
         this(name,description,date,status,null);
     }
 
+    public TaskModel(TaskModel model)
+    {
+        this.name = model.name;
+        this.description = model.description;
+        this.status = model.status;
+        this.dueDate = model.dueDate;
+        this.color = model.color;
+    }
+
     /**
      * Compares this TaskModel to other TaskModel.
      * returning >1 if greater, 0 if equal, and <-1 if less than

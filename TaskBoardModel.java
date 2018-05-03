@@ -10,6 +10,10 @@ public class TaskBoardModel implements Serializable {
     private ArrayList<ProjectModel> projects;
     private File file;
 
+    /**
+     * Constructor of TaskBoardModel
+     * Assigns default values to all fields
+     */
     public TaskBoardModel()
     {
         name = "TaskBoard1";
@@ -17,9 +21,14 @@ public class TaskBoardModel implements Serializable {
         file = null;
     }
 
+    /**
+     * Set method for TaskBoardModel name
+     * @param name new String name for TaskBoardModel
+     */
     public void setName(String name) {
         this.name = name;
     }
+
 
     public String getName()
     {
