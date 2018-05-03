@@ -70,6 +70,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 		}
 		else
 		{
+			this.currentProj = new ProjectModel("",null);
 			loadNewProjectDialog();
 		}
 	}
@@ -229,15 +230,24 @@ public class MainScreen extends JPanel implements TaskModelListener
 	{
 		//TODO: add code to show the create project dialog.
 		// track the number of projects. and decide
-		JDialog dialog = new JDialog((JFrame)SwingUtilities.getRoot(this),"create new project",true);
-		JLabel text = new JLabel("there no more projects in the taskboard model. you have to be forced to create new project.");
-		dialog.add(text);
-		dialog.setVisible(true);
-		
+		int oldProjectsCount = this.boardMainModel.numProjects();
+		CreateEditProjectDialog.show(this, null);
+		int newProjectsCount = this.boardMainModel.numProjects();
+
+		if(oldProjectsCount != newProjectsCount)
+		{
+			this.selectedProjIndex = newProjectsCount -1;
+			this.currentProj = this.boardMainModel.getProject(selectedProjIndex);
+			this.update();
+		}
+
 		//if creating new project got canceled and there is no projects left in the mainboard.
 		if(this.boardMainModel.numProjects() == 0)
 		{
 			this.selectedProjIndex = -1;
+			this.deleteSelectedProjBtn.setEnabled(false);
+			this.editSelectedProjBtn.setEnabled(false);
+			this.saveTaskBoardBtn.setEnabled(false);
 		}
 		
 	}
@@ -245,8 +255,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 	private void loadEditProjectDialog()
 	{
 		// TODO: add code to show the project edit dialog.
-		JDialog dialog = new JDialog((JFrame)SwingUtilities.getRoot(this),"edit a project",true);
-		dialog.setVisible(true);
+		CreateEditProjectDialog.show(this,this.currentProj);
 	}
 	
 	private void deleteSelectedProject()
@@ -381,9 +390,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 		public void mouseClicked(MouseEvent e) 
 		{
 			// TODO create the dialog to edit the clicked task.
-			//new CreateEditTaskDial(MainScreen.this);
-			JDialog dialog = new JDialog((JFrame)SwingUtilities.getRoot(this),"edit this" + this.task.getName(),true);
-			dialog.setVisible(true);
+			new CreateEditTaskDialog(MainScreen.this, this.task);
 		}
 
 		@Override
@@ -421,10 +428,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 			// configure the action ll for the add button
 			this.addTaskBtn.addActionListener((ActionEvent e) -> {
 				//TODO: include the code to show adding a task dialog.
-				//new CreateEditTaskDialog(MainScreen.this);
-				JDialog dialog = new JDialog((JFrame)SwingUtilities.getRoot(this),"not working yet",true);
-				dialog.pack();
-				dialog.setVisible(true);
+				new CreateEditTaskDialog(MainScreen.this, null);
 			});
 			
 			
@@ -438,6 +442,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 			}
 			this.add(this.name);
 			this.add(this.addTaskBtn);
+			// TODO: make scrollbar all the way up.
 			JScrollPane scrolable = new JScrollPane(tasksContainer);
 			scrolable.setPreferredSize(tasksContainer.getPreferredSize());
 			this.add(scrolable);
