@@ -169,14 +169,14 @@ public class MainScreen extends JPanel implements TaskModelListener
 				{
 					if(this.isDropDownListnerActivated)
 					{
+						// TODO : pay attention to the listeners when switching bwrween projects.
 						this.selectedProjIndex = this.projectsDropDown.getSelectedIndex();
 						ProjectModel toBeLoaded = this.boardMainModel.getProject(this.selectedProjIndex);
-	
 						if(this.currentProj != toBeLoaded)
 						{
 							this.currentProj = this.boardMainModel.getProject(this.projectsDropDown.getSelectedIndex());
+							this.currentProj.addListener(this);
 							this.update();
-							
 						}
 					}
 				});
@@ -198,7 +198,8 @@ public class MainScreen extends JPanel implements TaskModelListener
 	
 	
 	/**
-	 * removes all the columns form the mainscreen. Then, add the new columns.
+	 * Jobs Covered:
+	 * - add the tasks and the columns to mainscreen.
 	 */
 	private void loadDataFromCurrProject()
 	{
@@ -234,20 +235,23 @@ public class MainScreen extends JPanel implements TaskModelListener
 		CreateEditProjectDialog.show(this, null);
 		int newProjectsCount = this.boardMainModel.numProjects();
 
-		if(oldProjectsCount != newProjectsCount)
+		if(oldProjectsCount < newProjectsCount)
 		{
 			this.selectedProjIndex = newProjectsCount -1;
 			this.currentProj = this.boardMainModel.getProject(selectedProjIndex);
 			this.update();
 		}
-
-		//if creating new project got canceled and there is no projects left in the mainboard.
-		if(this.boardMainModel.numProjects() == 0)
+		else
 		{
-			this.selectedProjIndex = -1;
-			this.deleteSelectedProjBtn.setEnabled(false);
-			this.editSelectedProjBtn.setEnabled(false);
-			this.saveTaskBoardBtn.setEnabled(false);
+			System.out.print("cancel got pressed for creating new project.");
+			//if creating new project got canceled and there is no projects left in the mainboard.
+			if(this.boardMainModel.numProjects() == 0)
+			{
+				this.selectedProjIndex = -1;
+				this.deleteSelectedProjBtn.setEnabled(false);
+				this.editSelectedProjBtn.setEnabled(false);
+				this.saveTaskBoardBtn.setEnabled(false);
+			}
 		}
 		
 	}
@@ -265,6 +269,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 		{
 			this.selectedProjIndex = 0;
 			this.currentProj = this.boardMainModel.getProject(0);
+			this.currentProj.addListener(this);
 		}
 		else
 		{// signals that nomore projects exist.
@@ -495,7 +500,12 @@ public class MainScreen extends JPanel implements TaskModelListener
 	
 	//private FileHandler fileHandler;
 	
-	
+	/**
+	 * Covered Jobs:
+	 * - remove categories
+	 * - update the drop down.
+	 * - load the current project.
+	 */
 	@Override
 	public void update()
 	{
