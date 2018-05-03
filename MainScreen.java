@@ -119,6 +119,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 	private void setupMainScreen()
 	{
 		this.setLayout(new BorderLayout());
+		this.setPreferredSize(new Dimension(1080, 720));
 		setupNavBar();
 		setupGroupsComp();
 		handleActionListeners();
@@ -306,14 +307,18 @@ public class MainScreen extends JPanel implements TaskModelListener
 			this.background = task.getColor();
 			// TODO: (done) make the description box non editable.
 			// TODO: make the description background color change.
-			this.descriptionLabel.setBackground(task.getColor());
 			this.descriptionLabel.setLineWrap(true);
 			this.descriptionLabel.setWrapStyleWord(true);
 			this.descriptionLabel.setEditable(false);
-			
+			this.descriptionLabel.setBackground(this.background);
+			// take care of alignment for all the elements
 			this.nameLabel.setAlignmentX(LEFT_ALIGNMENT);
 			this.descriptionLabel.setAlignmentX(LEFT_ALIGNMENT);
 			this.dueDateLabel.setAlignmentX(LEFT_ALIGNMENT);
+			this.setAlignmentX(Component.CENTER_ALIGNMENT);
+			//add the jcomponents to the panel.
+			this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+			this.setBackground(this.background);
 			this.add(this.nameLabel);
 			this.add(this.descriptionLabel);
 			this.add(this.dueDateLabel);
@@ -330,16 +335,13 @@ public class MainScreen extends JPanel implements TaskModelListener
 		@Override
 		public void paintComponent(Graphics g)
 		{
-			this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
-			this.setBackground(this.background);
-			this.descriptionLabel.setOpaque(true);
-			this.descriptionLabel.setBackground(this.background);
+			
+			
 			this.setBorder(BorderFactory.createLineBorder(this.getParent().getBackground(), 5, false));
-			this.setAlignmentX(Component.CENTER_ALIGNMENT);
+			
 			// add titled borders to these components.
 			this.nameLabel.setBorder(BorderFactory.createTitledBorder("Task Name"));
 			this.descriptionLabel.setBorder(BorderFactory.createTitledBorder("Description"));
-			this.descriptionLabel.setBackground(Color.pink);
 			this.dueDateLabel.setBorder(BorderFactory.createTitledBorder("Due Date"));
 			super.paintComponent(g);
 		}
@@ -398,7 +400,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 			
 			
 			//add components to this jpanel
-			//TODO: make tasksContainer a container scrolable
+			//TODO: (done) make tasksContainer a container scrolable
 			Container tasksContainer = new Container();
 			tasksContainer.setLayout(new BoxLayout(tasksContainer,BoxLayout.Y_AXIS));
 			for(Task_comp taskPanel: this.taskPanels)
@@ -411,7 +413,9 @@ public class MainScreen extends JPanel implements TaskModelListener
 			scrolable.setPreferredSize(tasksContainer.getPreferredSize());
 			this.add(scrolable);
 			
-			this.setPreferredSize(new Dimension(750, 150));
+			
+			//set preffered size
+			this.setPreferredSize(new Dimension(100,300));
 		}
 		
 		private JLabel name;
@@ -429,7 +433,6 @@ public class MainScreen extends JPanel implements TaskModelListener
 			this.setAlignmentX(Component.LEFT_ALIGNMENT);
 			this.name.setAlignmentX(Component.CENTER_ALIGNMENT);
 			this.addTaskBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-			
 			super.paintComponent(g);
 		}
 		
