@@ -37,6 +37,7 @@ public class CreateEditTaskDialog extends JDialog {
 	 */
 	public CreateEditTaskDialog(MainScreen mainscreen, TaskModel model) {
 		super(SwingUtilities.getWindowAncestor(mainscreen));
+		this.parentPanel = mainscreen;
 		this.model = model;
 		project = mainscreen.getCurrProj();
 		JPanel entirePanel = new JPanel();
@@ -99,16 +100,21 @@ public class CreateEditTaskDialog extends JDialog {
 			e.printStackTrace();
 		}
 		
-		if(model == null) {
+		if(model == null) 
+		{
 			model = new TaskModel(nameInput.getText(), descriptionInput.getText(), c, 
 					String.valueOf(statusChoice.getSelectedItem()), Color.GRAY);
-			//EntireModel, create part has an issue. Need some way to transform that model or return a model to add
-		} else {
+			this.parentPanel.getCurrProj().addTask(model);
+			
+		} 
+		else 
+		{
 			model.setName(nameInput.getText());
 			model.setDescription(descriptionInput.getText());
 			model.setDueDate(c);
 			model.setStatus(String.valueOf(statusChoice.getSelectedItem()));
 			model.setColor(Color.GRAY);
+			this.parentPanel.getCurrProj().editTask(model, model);
 		}
 	}
 	
@@ -161,18 +167,18 @@ public class CreateEditTaskDialog extends JDialog {
 //        this.pack();
 //        this.setVisible(true);
 //    }
-//    
-    private void addNewTask() {
-    	ProjectModel project = parentPanel.getCurrProj();
-    	TaskModel model = project.createTask(nameInput.getText(), descriptionInput.getText(), new Date(datePicker.getValue().toEpochDay()), (String)statusChoice.getSelectedItem());
-    	project.addTask(model);
-    }
-
-    private void editTask(TaskModel oldTask) {
-    	ProjectModel project = parentPanel.getCurrProj();
-    	TaskModel model = project.createTask(nameInput.getText(), descriptionInput.getText(), new Date(datePicker.getValue().toEpochDay()), (String)statusChoice.getSelectedItem());
-    	project.editTask(oldTask, model);
-    }
+////    
+//    private void addNewTask() {
+//    	ProjectModel project = parentPanel.getCurrProj();
+//    	TaskModel model = project.createTask(nameInput.getText(), descriptionInput.getText(), new Date(datePicker.getValue().toEpochDay()), (String)statusChoice.getSelectedItem());
+//    	project.addTask(model);
+//    }
+//
+//    private void editTask(TaskModel oldTask) {
+//    	ProjectModel project = parentPanel.getCurrProj();
+//    	TaskModel model = project.createTask(nameInput.getText(), descriptionInput.getText(), new Date(datePicker.getText()), (String)statusChoice.getSelectedItem());
+//    	project.editTask(oldTask, model);
+//    }
 	
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Test");
