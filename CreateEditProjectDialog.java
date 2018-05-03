@@ -2,13 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-public class CreateEditProjectDialog extends JDialog{
+public class CreateEditProjectDialog extends JDialog {
 
 
     private JLabel nameLabel = new JLabel("Project Name: ");
     private JTextField projectName;
     private JList<String> list;
-    private ProjectModel projectModel = new ProjectModel("",null);
+    private ProjectModel projectModel = new ProjectModel("", null);
     private ProjectModel mainModel;
     private MainScreen parent;
     private JButton upButton = new JButton("Move Up");
@@ -22,11 +22,11 @@ public class CreateEditProjectDialog extends JDialog{
 
     /**
      * Private Constructor for CreateEditProjectDialog. Construct new Dialog from show method
+     *
      * @param parent MainScreen of TaskBoard
-     * @param model ProjectModel to be edited, null if new Project is to be constructed
+     * @param model  ProjectModel to be edited, null if new Project is to be constructed
      */
-    private CreateEditProjectDialog(MainScreen parent, ProjectModel model)
-    {
+    private CreateEditProjectDialog(MainScreen parent, ProjectModel model) {
         super(SwingUtilities.getWindowAncestor(parent));
         this.parent = parent;
         projectModel.copyFrom(model);
@@ -35,20 +35,19 @@ public class CreateEditProjectDialog extends JDialog{
         createGUI();
     }
 
-    public static void show(MainScreen parent, ProjectModel projectModel)
-    {
+    public static void show(MainScreen parent, ProjectModel projectModel) {
         new CreateEditProjectDialog(parent, projectModel);
     }
 
-    private void createGUI(){
-        this.setTitle((mainModel==null?"Create":"Edit")+" Project");
-        confirm.setText(mainModel==null?"Create":"Edit");
+    private void createGUI() {
+        this.setTitle((mainModel == null ? "Create" : "Edit") + " " + (mainModel == null ? "Project" : mainModel.getName()));
+        confirm.setText(mainModel == null ? "Create" : "Edit");
         JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         this.setModalityType(ModalityType.APPLICATION_MODAL);
         this.setModal(true);
-        projectName = new JTextField(mainModel==null?("Project " + (parent.getTaskBoardModel().numProjects() + 1)):mainModel.getName());
-        projectName.setPreferredSize(new Dimension(125,26));
+        projectName = new JTextField(mainModel == null ? ("Project " + (parent.getTaskBoardModel().numProjects() + 1)) : mainModel.getName());
+        projectName.setPreferredSize(new Dimension(125, 26));
 
         JPanel namePanel = new JPanel();
         namePanel.add(nameLabel);
@@ -56,8 +55,8 @@ public class CreateEditProjectDialog extends JDialog{
         panel.add(namePanel);
 
         JPanel boxPanel = new JPanel();
-        boxPanel.setLayout(new BoxLayout(boxPanel,BoxLayout.Y_AXIS));
-        Dimension size =  new Dimension(120,26);
+        boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.Y_AXIS));
+        Dimension size = new Dimension(120, 26);
         upButton.setMinimumSize(size);
         downButton.setMinimumSize(size);
         addButton.setMinimumSize(size);
@@ -68,16 +67,16 @@ public class CreateEditProjectDialog extends JDialog{
         addButton.setMaximumSize(size);
         removeButton.setMaximumSize(size);
         editButton.setMaximumSize(size);
-        list.setPreferredSize(new Dimension(90,150));
+        list.setPreferredSize(new Dimension(90, 150));
 
         boxPanel.add(upButton);
-        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         boxPanel.add(downButton);
-        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         boxPanel.add(addButton);
-        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         boxPanel.add(removeButton);
-        boxPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        boxPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         boxPanel.add(editButton);
 
 
@@ -102,7 +101,7 @@ public class CreateEditProjectDialog extends JDialog{
             addStatus();
         });
         removeButton.addActionListener((ActionEvent e) -> {
-            deleteStatus();
+                deleteStatus();
         });
         editButton.addActionListener((ActionEvent e) -> {
             changeName();
@@ -110,12 +109,14 @@ public class CreateEditProjectDialog extends JDialog{
         confirm.addActionListener((ActionEvent e) -> {
             projectModel.setName(projectName.getText());
             projectModel.addListener(parent);
-            parent.getTaskBoardModel().addProjects(projectModel);
-            mainModel = projectModel;
-            projectModel.update();
+            if (mainModel == null) {
+                parent.getTaskBoardModel().addProjects(projectModel);
+            }
+            parent.getCurrProj().copyFrom(projectModel);
+            parent.getCurrProj().update();
             this.dispose();
         });
-        cancel.addActionListener((ActionEvent e)-> {
+        cancel.addActionListener((ActionEvent e) -> {
             this.dispose();
         });
 
@@ -124,74 +125,61 @@ public class CreateEditProjectDialog extends JDialog{
 
         pack();
         setVisible(true);
-        System.out.println(boxPanel.getSize());
     }
 
-    private void addStatus()
-    {
-        String name = JOptionPane.showInputDialog(this,"Enter new status name:",null );
-        if (name != null)
-        {
-            System.out.println(projectModel.numStatuses());
+    private void addStatus() {
+        String name = JOptionPane.showInputDialog(this, "Enter new status name:", null);
+        if (!"".equals(name)) {
             projectModel.addStatus(name);
-            list.setSelectedIndex(projectModel.numStatuses()-1);
+            list.setSelectedIndex(projectModel.numStatuses() - 1);
             list.updateUI();
-        }
-    }
-
-    private void changeName()
-    {
-        String name = JOptionPane.showInputDialog(this,"Enter new status name:",null );
-        if (name != null)
-        {
-            projectModel.editStatus(list.getSelectedIndex(),name);
-            list.updateUI();
-        }
-    }
-
-    private void deleteStatus()
-    {
-        int index = list.getSelectedIndex();
-        if (index == -1)
-        {
-            Toolkit.getDefaultToolkit().beep();
         }
         else
         {
+            Toolkit.getDefaultToolkit().beep();
+        }
+    }
+
+    private void changeName() {
+        String name = JOptionPane.showInputDialog(this, "Enter new status name:", null);
+        if (name != null) {
+            projectModel.editStatus(list.getSelectedIndex(), name);
+            list.updateUI();
+        }
+    }
+
+    private void deleteStatus() {
+        int index = list.getSelectedIndex();
+        if (index == -1) {
+            Toolkit.getDefaultToolkit().beep();
+        } else if (JOptionPane.showConfirmDialog(this, "Are You Sure You Want to " +
+                "Delete This Status?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             projectModel.deleteStatus(index);
-            list.setSelectedIndex(-1);
+            list.clearSelection();
             list.updateUI();
         }
     }
 
-    private void moveUp()
-    {
+    private void moveUp() {
         int index = list.getSelectedIndex();
-        if (index <= 0)
-        {
+        if (index <= 0) {
             Toolkit.getDefaultToolkit().beep();
             return;
-        }
-        else
-        {
-            projectModel.swap(index,index-1);
-            list.setSelectedIndex(index-1);
+        } else {
+            projectModel.swap(index, index - 1);
+            list.setSelectedIndex(index - 1);
             list.updateUI();
         }
     }
 
-    private void moveDown()
-    {
+    private void moveDown() {
         int index = list.getSelectedIndex();
-        if (index == -1 || index == projectModel.numStatuses()-1)
-        {
+        if (index == -1 || index == projectModel.numStatuses() - 1) {
             Toolkit.getDefaultToolkit().beep();
             return;
-        }
-        else
-        {
-            projectModel.swap(index,index+1);
-            list.setSelectedIndex(index+1);
+        } else {
+            projectModel.swap(index, index + 1);
+            list.setSelectedIndex(index + 1);
             list.updateUI();
         }
     }

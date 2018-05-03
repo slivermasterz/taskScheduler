@@ -1,6 +1,5 @@
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,7 +35,10 @@ public class ProjectModel implements Serializable, ListModel<String>{
         map = new TaskMap(statuses);
     }
 
-
+    /**
+     * Copies all values from given ProjectModel to this ProjectModel
+     * @param projectModel ProjectModel to copy data from
+     */
     public void copyFrom(ProjectModel projectModel)
     {
         if (projectModel == null)
@@ -45,8 +47,6 @@ public class ProjectModel implements Serializable, ListModel<String>{
         }
         this.name = projectModel.name;
         this.map = new TaskMap(projectModel.map);
-        this.listeners = projectModel.listeners;
-        update();
     }
 
     /**
