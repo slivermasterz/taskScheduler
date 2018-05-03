@@ -41,7 +41,7 @@ public class CreateEditProjectDialog extends JDialog{
     }
 
     private void createGUI(){
-        this.setTitle((mainModel==null?"Create":"Edit")+" Project");
+        this.setTitle((mainModel==null?"Create":"Edit")+ " " + (mainModel==null?"Project":mainModel.getName()));
         confirm.setText(mainModel==null?"Create":"Edit");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
@@ -113,8 +113,8 @@ public class CreateEditProjectDialog extends JDialog{
             if (mainModel == null) {
                 parent.getTaskBoardModel().addProjects(projectModel);
             }
-            mainModel = projectModel;
-            projectModel.update();
+            parent.getCurrProj().copyFrom(projectModel);
+            parent.getCurrProj().update();
             this.dispose();
         });
         cancel.addActionListener((ActionEvent e)-> {
@@ -126,7 +126,6 @@ public class CreateEditProjectDialog extends JDialog{
 
         pack();
         setVisible(true);
-        System.out.println(boxPanel.getSize());
     }
 
     private void addStatus()
@@ -134,7 +133,6 @@ public class CreateEditProjectDialog extends JDialog{
         String name = JOptionPane.showInputDialog(this,"Enter new status name:",null );
         if (name != null)
         {
-            System.out.println(projectModel.numStatuses());
             projectModel.addStatus(name);
             list.setSelectedIndex(projectModel.numStatuses()-1);
             list.updateUI();
