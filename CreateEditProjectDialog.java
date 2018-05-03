@@ -110,7 +110,9 @@ public class CreateEditProjectDialog extends JDialog{
         confirm.addActionListener((ActionEvent e) -> {
             projectModel.setName(projectName.getText());
             projectModel.addListener(parent);
-            parent.getTaskBoardModel().addProjects(projectModel);
+            if (mainModel == null) {
+                parent.getTaskBoardModel().addProjects(projectModel);
+            }
             mainModel = projectModel;
             projectModel.update();
             this.dispose();
