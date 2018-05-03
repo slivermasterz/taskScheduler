@@ -236,17 +236,22 @@ public class MainScreen extends JPanel implements TaskModelListener
 	
 	private void loadTaskBoardFromFile()
 	{
-		// TODO: add the code to show the loading dialog.
-		this.boardMainModel = FileHandler.loadTaskBoard();
-		if(this.boardMainModel.numProjects() > 0)
+		// TODO: (done) add the code to show the loading dialog.
+		// TODO: (done) handle the null from the file handler.
+		TaskBoardModel temp = FileHandler.loadTaskBoard();
+		if(temp != null)
 		{
-			this.selectedProjIndex = 0;
+			this.boardMainModel = temp;
+			if(this.boardMainModel.numProjects() > 0)
+			{
+				this.selectedProjIndex = 0;
+			}
+			else
+			{
+				this.selectedProjIndex = -1;
+			}
+			this.update();
 		}
-		else
-		{
-			this.selectedProjIndex = -1;
-		}
-		this.update();
 	}
 	
 	private void saveTaskBoardToFile()
@@ -296,10 +301,15 @@ public class MainScreen extends JPanel implements TaskModelListener
 				String date = task.getDueDate() != null ? formater.format(task.getDueDate()): "";
 				this.dueDateLabel = new JLabel(date);
 			}
+			
+			// TODO: (done) pay attention to the background color of the component.
+			this.background = task.getColor();
+			// TODO: (done) make the description box non editable.
+			// TODO: make the description background color change.
+			this.descriptionLabel.setBackground(task.getColor());
 			this.descriptionLabel.setLineWrap(true);
 			this.descriptionLabel.setWrapStyleWord(true);
-			// TODO : (done) pay attention to the background color of the component.
-			this.background = task.getColor();
+			this.descriptionLabel.setEditable(false);
 			
 			this.nameLabel.setAlignmentX(LEFT_ALIGNMENT);
 			this.descriptionLabel.setAlignmentX(LEFT_ALIGNMENT);
