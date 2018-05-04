@@ -91,7 +91,7 @@ public class ProjectModel implements Serializable, ListModel<String>{
      * @return TaskModel with default parameters
      */
     public TaskModel createTask() {
-        String taskName = "Task" + map.size() + 1;
+        String taskName = "Task" + (map.size() + 1);
         return new TaskModel(taskName, "", null, topStatus());
     }
 

@@ -40,22 +40,15 @@ public class CreateEditProjectDialog extends JDialog {
     }
 
     private void createGUI() {
-        this.setTitle((mainModel == null ? "Create" : "Edit") + " " + (mainModel == null ? "Project" : mainModel.getName()));
-        confirm.setText(mainModel == null ? "Create" : "Edit");
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         this.setModalityType(ModalityType.APPLICATION_MODAL);
         this.setModal(true);
+        this.setResizable(false);
+
+        this.setTitle((mainModel == null ? "Create" : "Edit") + " " + (mainModel == null ? "Project" : mainModel.getName()));
+        confirm.setText(mainModel == null ? "Create" : "Edit");
         projectName = new JTextField(mainModel == null ? ("Project " + (parent.getTaskBoardModel().numProjects() + 1)) : mainModel.getName());
         projectName.setPreferredSize(new Dimension(125, 26));
 
-        JPanel namePanel = new JPanel();
-        namePanel.add(nameLabel);
-        namePanel.add(projectName);
-        panel.add(namePanel);
-
-        JPanel boxPanel = new JPanel();
-        boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.Y_AXIS));
         Dimension size = new Dimension(120, 26);
         upButton.setMinimumSize(size);
         downButton.setMinimumSize(size);
@@ -69,6 +62,14 @@ public class CreateEditProjectDialog extends JDialog {
         editButton.setMaximumSize(size);
         list.setPreferredSize(new Dimension(90, 150));
 
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        JPanel namePanel = new JPanel();
+        namePanel.add(nameLabel);
+        namePanel.add(projectName);
+        mainPanel.add(namePanel);
+        JPanel boxPanel = new JPanel();
+        boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.Y_AXIS));
         boxPanel.add(upButton);
         boxPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         boxPanel.add(downButton);
@@ -78,18 +79,14 @@ public class CreateEditProjectDialog extends JDialog {
         boxPanel.add(removeButton);
         boxPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         boxPanel.add(editButton);
-
-
         JPanel statusPanel = new JPanel();
         statusPanel.add(boxPanel);
         statusPanel.add(list);
-        panel.add(statusPanel);
-
+        mainPanel.add(statusPanel);
         JPanel confirmCancelPanel = new JPanel();
         confirmCancelPanel.add(confirm);
         confirmCancelPanel.add(cancel);
-        panel.add(confirmCancelPanel);
-
+        mainPanel.add(confirmCancelPanel);
 
         upButton.addActionListener((ActionEvent e) -> {
             moveUp();
@@ -120,8 +117,7 @@ public class CreateEditProjectDialog extends JDialog {
             this.dispose();
         });
 
-        this.add(panel);
-
+        this.add(mainPanel);
 
         pack();
         setVisible(true);

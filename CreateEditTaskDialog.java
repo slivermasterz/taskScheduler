@@ -43,6 +43,7 @@ public class CreateEditTaskDialog extends JDialog {
 
         this.setModalityType(ModalityType.APPLICATION_MODAL);
         this.setModal(true);
+        this.setResizable(false);
 
         this.setTitle((mainModel==null?"Create":"Edit")+ " " + (mainModel==null?"Task":mainModel.getName()));
         confirmButton.setText(mainModel==null?"Create":"Edit");
@@ -56,25 +57,28 @@ public class CreateEditTaskDialog extends JDialog {
         statusChoice.setSelectedIndex(mainModel==null?0:parent.getCurrProj().getStatuses().indexOf(taskModel.getStatus()));
         datePicker = (mainModel==null || mainModel.getDueDate() == null)?new JDatePicker():new JDatePicker(mainModel.getDueDate());
 
-        int width = 274;
         //nameInput.setHorizontalAlignment();
-        datePicker.setMaximumSize(new Dimension(width,95));
+        nameLabel.setPreferredSize(new Dimension(73,20));
+        statusLabel.setPreferredSize(new Dimension(70,20));
+        dueDateLabel.setPreferredSize(new Dimension(69,20));
+        colorLabel.setPreferredSize(new Dimension(69,20));
+        colorButton.setPreferredSize(new Dimension(73,20));
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
-        JPanel namePanel = new JPanel();
+        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         namePanel.add(nameLabel);
         namePanel.add(nameInput);
-        JPanel descriptionPanel = new JPanel();
+        JPanel descriptionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         descriptionPanel.add(descriptionLabel);
         descriptionPanel.add(descriptionScroll);
-        JPanel statusPanel = new JPanel();
+        JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         statusPanel.add(statusLabel);
         statusPanel.add(statusChoice);
-        JPanel datePanel = new JPanel();
+        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         datePanel.add(dueDateLabel);
         datePanel.add(datePicker);
-        JPanel colorPanel = new JPanel();
+        JPanel colorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         colorPanel.add(colorLabel);
         colorPanel.add(colorButton);
         JPanel confirmCancelPanel = new JPanel();
@@ -106,7 +110,7 @@ public class CreateEditTaskDialog extends JDialog {
         pack();
         setVisible(true);
 
-        System.out.println(descriptionPanel.getSize());
+        System.out.println(descriptionInput.getSize());
     }
 
     private void confirm()
