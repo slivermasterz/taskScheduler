@@ -395,7 +395,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 		public void mouseClicked(MouseEvent e) 
 		{
 			// TODO create the dialog to edit the clicked task.
-			new CreateEditTaskDialog(MainScreen.this, this.task);
+			CreateEditTaskDialog.show(MainScreen.this, this.task);
 		}
 
 		@Override
@@ -433,7 +433,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 			// configure the action ll for the add button
 			this.addTaskBtn.addActionListener((ActionEvent e) -> {
 				//TODO: include the code to show adding a task dialog.
-				new CreateEditTaskDialog(MainScreen.this, null);
+				CreateEditTaskDialog.show(MainScreen.this, null);
 			});
 			
 			
