@@ -15,8 +15,8 @@ public class CreateEditProjectDialog extends JDialog {
     private JButton downButton = new JButton("Move Down");
     private JButton addButton = new JButton("Add Status");
     private JButton removeButton = new JButton("Remove Status");
-    private JButton confirm = new JButton("Confirm");
-    private JButton cancel = new JButton("Cancel");
+    private JButton confirmButton = new JButton("Confirm");
+    private JButton cancelButton = new JButton("Cancel");
     private JButton editButton = new JButton("Edit Status");
 
 
@@ -45,7 +45,7 @@ public class CreateEditProjectDialog extends JDialog {
         this.setResizable(false);
 
         this.setTitle((mainModel == null ? "Create" : "Edit") + " " + (mainModel == null ? "Project" : mainModel.getName()));
-        confirm.setText(mainModel == null ? "Create" : "Edit");
+        confirmButton.setText(mainModel == null ? "Create" : "Edit");
         projectName = new JTextField(mainModel == null ? ("Project " + (parent.getTaskBoardModel().numProjects() + 1)) : mainModel.getName());
         projectName.setPreferredSize(new Dimension(125, 26));
 
@@ -84,8 +84,8 @@ public class CreateEditProjectDialog extends JDialog {
         statusPanel.add(list);
         mainPanel.add(statusPanel);
         JPanel confirmCancelPanel = new JPanel();
-        confirmCancelPanel.add(confirm);
-        confirmCancelPanel.add(cancel);
+        confirmCancelPanel.add(confirmButton);
+        confirmCancelPanel.add(cancelButton);
         mainPanel.add(confirmCancelPanel);
 
         upButton.addActionListener((ActionEvent e) -> {
@@ -98,22 +98,16 @@ public class CreateEditProjectDialog extends JDialog {
             addStatus();
         });
         removeButton.addActionListener((ActionEvent e) -> {
-                deleteStatus();
+            deleteStatus();
         });
         editButton.addActionListener((ActionEvent e) -> {
             changeName();
         });
-        confirm.addActionListener((ActionEvent e) -> {
-            projectModel.setName(projectName.getText());
-            projectModel.addListener(parent);
-            if (mainModel == null) {
-                parent.getTaskBoardModel().addProjects(projectModel);
-            }
-            parent.getCurrProj().copyFrom(projectModel);
-            parent.getCurrProj().update();
+        confirmButton.addActionListener((ActionEvent e) -> {
+            confirm();
             this.dispose();
         });
-        cancel.addActionListener((ActionEvent e) -> {
+        cancelButton.addActionListener((ActionEvent e) -> {
             this.dispose();
         });
 
@@ -177,6 +171,20 @@ public class CreateEditProjectDialog extends JDialog {
             projectModel.swap(index, index + 1);
             list.setSelectedIndex(index + 1);
             list.updateUI();
+        }
+    }
+
+    private void confirm()
+    {
+        projectModel.setName(projectName.getText());
+        projectModel.addListener(parent);
+        if (mainModel == null) {
+            parent.getTaskBoardModel().addProjects(projectModel);
+        }
+        else
+        {
+            parent.getCurrProj().copyFrom(projectModel);
+            parent.getCurrProj().update();
         }
     }
 }
