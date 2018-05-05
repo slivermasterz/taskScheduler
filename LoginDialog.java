@@ -6,13 +6,9 @@ import java.util.Arrays;
 import static java.awt.Dialog.ModalityType.APPLICATION_MODAL;
 
 /**
-<<<<<<< HEAD
  * LoginDialog is an extension of Dialog that checks for username and password before allowing the user to log in.
  *
  * Created by Lok Man Chu
-=======
- * LoginDialog is an extension of Dialog that checks for username and password before allowing the user to log in
->>>>>>> abd75ee3e3dbde855016b7eb20c194e573234aab
  */
 public class LoginDialog extends JDialog {
 

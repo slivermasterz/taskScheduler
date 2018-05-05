@@ -6,17 +6,10 @@ import java.awt.event.ActionEvent;
  * CreateEditTaskDialog is a JDialog that handles creating and editing projects.
  *
  * A user can modify the name of the Project by inputting a String in the JTextfield
-<<<<<<< HEAD
  * The status of the project can be manipulated with commands given with a representation
  * of all the statuses in a JList.
  *
  * Users can Add, Delete, Move, and Rename Statuses.
-=======
- * The status of the project can be manipulated with commands given with a representation 
- * of all the statuses in a JList. 
- * 
- * Users can Add, Delete, Move, and Rename Statuses. 
->>>>>>> abd75ee3e3dbde855016b7eb20c194e573234aab
  * Created by Lok Man Chu
  */
 public class CreateEditProjectDialog extends JDialog {
