@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.ScrollPane;
+import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -331,46 +332,61 @@ public class MainScreen extends JPanel implements TaskModelListener
 			if(task == null)
 			{//return a test component in task is null;
 				this.nameLabel = new JLabel("test task title for the task.");
-				this.descriptionLabel = new JTextArea("test description for the task.",6,15);
+				this.descriptionTextArea = new JTextArea("test description for the task.",6,15);
 				this.dueDateLabel = new JLabel("test date for the task.");
+				this.handleGUIElements();
 			}
 			else
 			{
 				this.task = task;
 				this.nameLabel = new JLabel(task.getName());
-				this.descriptionLabel = new JTextArea(task.getDescription(),6,15);
+				this.descriptionTextArea = new JTextArea(task.getDescription(),6,15);
 				// TODO: (done) make the date print correctly.
 				// TODO: (done) make it accept null dates. it should produce empty date field.
 				SimpleDateFormat formater = new SimpleDateFormat("EEEE MMM dd-YYYY"); //thanks to stackoverflow user Rahul Tripathi.
 				String date = task.getDueDate() != null ? formater.format(task.getDueDate()): "";
 				this.dueDateLabel = new JLabel(date);
+				// TODO: (done) pay attention to the background color of the component.
+				this.background = task.getColor();
+				this.handleGUIElements();
 			}
+		}
+		
+		
+		public void handleGUIElements()
+		{
 			
-			// TODO: (done) pay attention to the background color of the component.
-			this.background = task.getColor();
 			// TODO: (done) make the description box non editable.
-			// TODO: make the description background color change.
-			this.descriptionLabel.setLineWrap(true);
-			this.descriptionLabel.setWrapStyleWord(true);
-			this.descriptionLabel.setEditable(false);
-			this.descriptionLabel.setBackground(this.background);
+			// TODO: (done) make the description background color change.
+			this.descriptionTextArea.setLineWrap(true);
+			this.descriptionTextArea.setWrapStyleWord(true);
+			this.descriptionTextArea.setEditable(false);
+			this.descriptionTextArea.setBackground(this.background);
+			//remove action listeners to make the event populate to the parent.
+			MouseListener[] listeners = this.descriptionTextArea.getMouseListeners();
+			for(MouseListener lis : listeners)
+			{
+				this.descriptionTextArea.removeMouseListener(lis);
+			}
+			this.descriptionTextArea.addMouseListener(this);
+			
 			// take care of alignment for all the elements
 			this.nameLabel.setAlignmentX(LEFT_ALIGNMENT);
-			this.descriptionLabel.setAlignmentX(LEFT_ALIGNMENT);
+			this.descriptionTextArea.setAlignmentX(LEFT_ALIGNMENT);
 			this.dueDateLabel.setAlignmentX(LEFT_ALIGNMENT);
 			this.setAlignmentX(Component.CENTER_ALIGNMENT);
 			//add the jcomponents to the panel.
 			this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 			this.setBackground(this.background);
 			this.add(this.nameLabel);
-			this.add(this.descriptionLabel);
+			this.add(this.descriptionTextArea);
 			this.add(this.dueDateLabel);
 			this.addMouseListener(this);
 		}
 		
 		private JLabel nameLabel;
 		// TODO use something different than a JLabel because the text is not wraping.
-		private JTextArea descriptionLabel;
+		private JTextArea descriptionTextArea;
 		private JLabel dueDateLabel;
 		private Color background;
 		private TaskModel task;
@@ -379,13 +395,13 @@ public class MainScreen extends JPanel implements TaskModelListener
 		public void paintComponent(Graphics g)
 		{
 			
-			
 			this.setBorder(BorderFactory.createLineBorder(this.getParent().getBackground(), 5, false));
 			
 			// add titled borders to these components.
 			this.nameLabel.setBorder(BorderFactory.createTitledBorder("Task Name"));
-			this.descriptionLabel.setBorder(BorderFactory.createTitledBorder("Description"));
+			this.descriptionTextArea.setBorder(BorderFactory.createTitledBorder("Description"));
 			this.dueDateLabel.setBorder(BorderFactory.createTitledBorder("Due Date"));
+			
 			super.paintComponent(g);
 		}
 		
@@ -394,8 +410,8 @@ public class MainScreen extends JPanel implements TaskModelListener
 		@Override
 		public void mouseClicked(MouseEvent e) 
 		{
-			// TODO create the dialog to edit the clicked task.
-			new CreateEditTaskDialog(MainScreen.this, this.task);
+			// TODO: (done) create the dialog to edit the clicked task.
+			CreateEditTaskDialog.show(MainScreen.this, this.task);
 		}
 
 		@Override
@@ -430,10 +446,11 @@ public class MainScreen extends JPanel implements TaskModelListener
 			}
 			
 			this.addTaskBtn = new JButton("+");
+			this.addTaskBtn.setToolTipText("Add Task");
 			// configure the action ll for the add button
 			this.addTaskBtn.addActionListener((ActionEvent e) -> {
 				//TODO: include the code to show adding a task dialog.
-				new CreateEditTaskDialog(MainScreen.this, null);
+				CreateEditTaskDialog.show(MainScreen.this, this.name.getText());
 			});
 			
 			
