@@ -11,7 +11,7 @@ public class CreateEditTaskDialog extends JDialog {
     private JTextField nameInput = new JTextField(15);
     private JLabel descriptionLabel = new JLabel("Description: ");
     private JTextArea descriptionInput = new JTextArea(5,15);
-    JScrollPane descriptionScroll = new JScrollPane(descriptionInput);
+    private JScrollPane descriptionScroll = new JScrollPane(descriptionInput);
     private JLabel statusLabel = new JLabel("Status: ");
     private JComboBox<Object> statusChoice;
     private JLabel dueDateLabel = new JLabel("Due Date: ");
@@ -27,14 +27,20 @@ public class CreateEditTaskDialog extends JDialog {
 
     public static void show(MainScreen parent, TaskModel model)
     {
-        new CreateEditTaskDialog(parent, model);
+        new CreateEditTaskDialog(parent, model, null);
     }
 
-    private CreateEditTaskDialog(MainScreen parent, TaskModel model) {
+    public static void show(MainScreen parent, String status)
+    {
+        new CreateEditTaskDialog(parent,null, status);
+    }
+
+    private CreateEditTaskDialog(MainScreen parent, TaskModel model, String status) {
         super(SwingUtilities.getWindowAncestor(parent));
         this.parent = parent;
         mainModel = model;
         taskModel = mainModel == null?parent.getCurrProj().createTask():new TaskModel(mainModel);
+        taskModel.setStatus(status);
         statusChoice = new JComboBox<Object>(parent.getCurrProj().getStatuses().toArray());
         createGUI();
     }
@@ -54,7 +60,7 @@ public class CreateEditTaskDialog extends JDialog {
         nameInput.setText(taskModel.getName());
         descriptionInput.setText(taskModel.getDescription());
         colorButton.setBackground(taskModel.getColor());
-        statusChoice.setSelectedIndex(mainModel==null?0:parent.getCurrProj().getStatuses().indexOf(taskModel.getStatus()));
+        statusChoice.setSelectedIndex(parent.getCurrProj().getStatuses().indexOf(taskModel.getStatus()));
         datePicker = (mainModel==null || mainModel.getDueDate() == null)?new JDatePicker():new JDatePicker(mainModel.getDueDate());
 
         //nameInput.setHorizontalAlignment();
