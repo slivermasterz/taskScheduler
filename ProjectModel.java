@@ -8,7 +8,7 @@ import java.util.Date;
  * ProjectModel is a collection of TaskModels representing a Project
  * ProjectModel will automatically sort all TaskModels added to it.
  *
- * Created by Lok Chu
+ * Created by Lok Man Chu
  */
 public class ProjectModel implements Serializable, ListModel<String>{
 
