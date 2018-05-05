@@ -244,7 +244,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 		}
 		else
 		{
-			System.out.print("cancel got pressed for creating new project.");
+			System.out.println("Cancel got pressed for creating new project.");
 			//if creating new project got canceled and there is no projects left in the mainboard.
 			if(this.boardMainModel.numProjects() == 0)
 			{
