@@ -2,8 +2,20 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
 
+/**
+ * FileHandler deals with saving and loading of TaskBoardModels through Serialization
+ * FileHandler does so through static loadTaskBoard and saveTaskBoard methods.
+ */
 public class FileHandler {
 
+    /**
+     * Static method to load a TaskBoard.
+     * loadTaskBoard will prompt a user with a JFileChooser, in which a user needs to
+     * select a ".taskboard" file. If a taskboard file is selected, method will return with a
+     * TaskBoardModel.
+     * If the user cancels their selection, null will be returned instead.
+     * @return TaskBoard chosen by user. null if Dialog is canceled.
+     */
     public static TaskBoardModel loadTaskBoard() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Specify a file to load");
@@ -33,6 +45,16 @@ public class FileHandler {
         }
     }
 
+    /**
+     * Static method to save a TaskBoard
+     *
+     * If the user has not saved the taskBoardModel before, a JFileChooser
+     * will prompt the user for a save location.
+     *
+     * If the file has been saved before, saveTaskBoard will save the TaskBoard
+     *
+     * @param taskBoardModel
+     */
     public static void saveTaskBoard(TaskBoardModel taskBoardModel) {
         File file = taskBoardModel.getFile();
         if (file == null) {
