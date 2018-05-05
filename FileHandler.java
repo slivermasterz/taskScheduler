@@ -19,7 +19,9 @@ public class FileHandler {
             System.out.println("Load file: " + file.getAbsolutePath());
             try {
                 ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
-                return (TaskBoardModel) in.readObject();
+                TaskBoardModel m = (TaskBoardModel) in.readObject();
+                m.setFile(file);
+                return m;
             } catch (Exception e) {
                 System.out.println(e);
                 return null;
