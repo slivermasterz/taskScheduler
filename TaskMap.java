@@ -1,6 +1,10 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * TaskMap is data structure that automatically sorts TaskModels into
+ * due date order. Also automatically sorts TaskModels into respective
+ */
 public class TaskMap implements Serializable
 {
     /**
@@ -31,6 +35,10 @@ public class TaskMap implements Serializable
         }
     }
 
+    /**
+     * Copy constructor for TaskMap
+     * @param t TaskMap to copy from
+     */
     public TaskMap(TaskMap t)
     {
         this.statuses = (ArrayList<String>) t.statuses.clone();
@@ -61,6 +69,11 @@ public class TaskMap implements Serializable
         taskGroups.add(index,new ArrayList<TaskModel>());
     }
 
+    /**
+     * Changes status name of status at index of statusArray to newStatus String
+     * @param index index of status
+     * @param newStatus new String name for status
+     */
     public void editStatus(int index, String newStatus)
     {
         statuses.remove(index);
