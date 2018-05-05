@@ -4,8 +4,11 @@ import java.util.ArrayList;
 /**
  * TaskMap is data structure that automatically sorts TaskModels into
  * due date order. Also automatically sorts TaskModels into respective
+<<<<<<< HEAD
  *
  * Created by Lok Man Chu
+=======
+>>>>>>> abd75ee3e3dbde855016b7eb20c194e573234aab
  */
 public class TaskMap implements Serializable
 {

@@ -5,8 +5,11 @@ import java.io.*;
 /**
  * FileHandler deals with saving and loading of TaskBoardModels through Serialization
  * FileHandler does so through static loadTaskBoard and saveTaskBoard methods.
+<<<<<<< HEAD
  *
  * Created by Lok Man Chu
+=======
+>>>>>>> abd75ee3e3dbde855016b7eb20c194e573234aab
  */
 public class FileHandler {
 
