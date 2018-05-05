@@ -449,7 +449,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 			// configure the action ll for the add button
 			this.addTaskBtn.addActionListener((ActionEvent e) -> {
 				//TODO: include the code to show adding a task dialog.
-				CreateEditTaskDialog.show(MainScreen.this, null);
+				CreateEditTaskDialog.show(MainScreen.this, this.name);
 			});
 			
 			
