@@ -8,7 +8,7 @@ import java.util.Date;
  * ProjectModel is a collection of TaskModels representing a Project
  * ProjectModel will automatically sort all TaskModels added to it.
  *
- * Created by Lok Chu
+ * Created by Lok Man Chu
  */
 public class ProjectModel implements Serializable, ListModel<String>{
 
@@ -58,6 +58,11 @@ public class ProjectModel implements Serializable, ListModel<String>{
         update();
     }
 
+    /**
+     * Changes the value of status at index
+     * @param index index of Status to be changed
+     * @param newStatus new String name of Status
+     */
     public void editStatus(int index, String newStatus)
     {
         map.editStatus(index,newStatus);
@@ -184,6 +189,10 @@ public class ProjectModel implements Serializable, ListModel<String>{
         return map.statuses.size();
     }
 
+    /**
+     * Get the ArrayList of Statuses
+     * @return ArrayList<String> of statuses
+     */
     public ArrayList<String> getStatuses()
     {
         return map.statuses;
@@ -223,22 +232,34 @@ public class ProjectModel implements Serializable, ListModel<String>{
         this.name = name;
     }
 
-    @Override
+   @Override
+   /**
+    * method required for ListModel
+    */
     public int getSize() {
         return numStatuses();
     }
 
     @Override
+    /**
+     * method required for ListModel
+     */
     public String getElementAt(int index) {
         return map.statuses.get(index);
     }
 
     @Override
+    /**
+     * Unused
+     */
     public void addListDataListener(ListDataListener l) {
 
     }
 
     @Override
+    /**
+     * Unused
+     */
     public void removeListDataListener(ListDataListener l) {
 
     }

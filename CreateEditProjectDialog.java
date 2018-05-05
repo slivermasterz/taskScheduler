@@ -2,6 +2,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+/**
+ * CreateEditTaskDialog is a JDialog that handles creating and editing projects.
+ *
+ * A user can modify the name of the Project by inputting a String in the JTextfield
+ * The status of the project can be manipulated with commands given with a representation
+ * of all the statuses in a JList.
+ *
+ * Users can Add, Delete, Move, and Rename Statuses.
+ * Created by Lok Man Chu
+ */
 public class CreateEditProjectDialog extends JDialog {
 
 
@@ -23,6 +33,11 @@ public class CreateEditProjectDialog extends JDialog {
     /**
      * Private Constructor for CreateEditProjectDialog. Construct new Dialog from show method
      *
+     * Jobs covered:
+     * - Creates JDialog
+     * - Creates a ProjectModel to make changes on.
+     * - Creates a ListModel for JList
+     * - Calls GUI creation method
      * @param parent MainScreen of TaskBoard
      * @param model  ProjectModel to be edited, null if new Project is to be constructed
      */
@@ -35,10 +50,26 @@ public class CreateEditProjectDialog extends JDialog {
         createGUI();
     }
 
+    /**
+     * Static method for creating CreateEditProjectDialog.
+     * This call is used for Creating or Editing a Project
+     * @param parent MainScreen calling the Dialog
+     * @param projectModel ProjectModel to be modified. null if new
+     */
     public static void show(MainScreen parent, ProjectModel projectModel) {
         new CreateEditProjectDialog(parent, projectModel);
     }
 
+    /**
+     * Creates the GUI for CreateEditProjectDialog
+     *
+     * Jobs covered:
+     * - Sets Dialog settings for modality and resizing
+     * - Sets text to be for Creating Task or Editing Task
+     * - Sets default values of name input field
+     * - Adds all elements to Dialog
+     * - Assigns ActionListeners to all buttons
+     */
     private void createGUI() {
         this.setModalityType(ModalityType.APPLICATION_MODAL);
         this.setModal(true);
@@ -117,6 +148,12 @@ public class CreateEditProjectDialog extends JDialog {
         setVisible(true);
     }
 
+    /**
+     * addStatus method prompts the user for a String name with a InputDialog.
+     * If the String entered is not empty, a new Status will be created with
+     * String name. If the String is empty, a new Status will not be added
+     * and a notification sound will play.
+     */
     private void addStatus() {
         String name = JOptionPane.showInputDialog(this, "Enter new status name:", null);
         if (!"".equals(name)) {
@@ -130,6 +167,9 @@ public class CreateEditProjectDialog extends JDialog {
         }
     }
 
+    /**
+     * changeName allows for a user to change the name of the Status currently selected in the JList
+     */
     private void changeName() {
         String name = JOptionPane.showInputDialog(this, "Enter new status name:", null);
         if (name != null) {
@@ -138,6 +178,13 @@ public class CreateEditProjectDialog extends JDialog {
         }
     }
 
+    /**
+     * deleteStatus method prompts the user if they want to delete the selected status.
+     * If Yes, the status is deleted along with all the Tasks within it.
+     * If No, the status is not deleted.
+     *
+     * If there is no Status selected, or if there are no Statuses available, a notification sound will play.
+     */
     private void deleteStatus() {
         int index = list.getSelectedIndex();
         if (index == -1) {
@@ -150,6 +197,10 @@ public class CreateEditProjectDialog extends JDialog {
         }
     }
 
+    /**
+     * moveUp method moves the selected status up in the JList.
+     * Will play a notification noise if the selected status cannot move farther up.
+     */
     private void moveUp() {
         int index = list.getSelectedIndex();
         if (index <= 0) {
@@ -162,6 +213,10 @@ public class CreateEditProjectDialog extends JDialog {
         }
     }
 
+    /**
+     * moveDown method moves the selected status down in the JList.
+     * Will play a notification noise if the selected status cannot move farther down.
+     */
     private void moveDown() {
         int index = list.getSelectedIndex();
         if (index == -1 || index == projectModel.numStatuses() - 1) {
@@ -174,6 +229,13 @@ public class CreateEditProjectDialog extends JDialog {
         }
     }
 
+    /**
+     * confirm is called when the Create or Edit button is pressed.
+     * If Create, a new ProjectModel will be added to the TaskBoardModel with
+     * statuses shown on the JList.
+     *
+     * If Edit, the ProjectModel will be modified to the values in the Dialog
+     */
     private void confirm()
     {
         projectModel.setName(projectName.getText());

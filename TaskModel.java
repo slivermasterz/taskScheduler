@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * TaskModel is a model for a Task that contains the name, description, due date, and status of the Task.
  *
- * Created by Lok Chu
+ * Created by Lok Man Chu
  */
 public class TaskModel implements Comparable<TaskModel>, Serializable{
 
@@ -62,6 +62,10 @@ public class TaskModel implements Comparable<TaskModel>, Serializable{
         this(name,description,date,status,null);
     }
 
+    /**
+     * Copy constructor of TaskModel
+     * @param model TaskModel to copy values from
+     */
     public TaskModel(TaskModel model)
     {
         this.name = model.name;
