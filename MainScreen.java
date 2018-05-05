@@ -446,6 +446,7 @@ public class MainScreen extends JPanel implements TaskModelListener
 			}
 			
 			this.addTaskBtn = new JButton("+");
+			this.addTaskBtn.setToolTipText("Add Task");
 			// configure the action ll for the add button
 			this.addTaskBtn.addActionListener((ActionEvent e) -> {
 				//TODO: include the code to show adding a task dialog.
